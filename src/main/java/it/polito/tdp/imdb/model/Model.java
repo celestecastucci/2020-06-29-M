@@ -20,6 +20,8 @@ public class Model {
 	private ImdbDAO dao;
 	private SimpleWeightedGraph<Director, DefaultWeightedEdge> grafo;
 	private Map<Integer,Director> idMap;
+	List<Director> percorsoMigliore;
+	double sommaPesi;
 	
 	public Model() {
 		dao = new  ImdbDAO();
@@ -60,6 +62,55 @@ public class Model {
 		return result;
 	}
 	
+	
+	//METODO RICORSIVO 
+	public List<Director> trovaPercorso (Director partenza, int c ){
+		this.percorsoMigliore = new ArrayList<>();
+		List<Director> parziale = new ArrayList<>();
+		sommaPesi = 0;
+		
+		parziale.add(partenza);
+		cerca(c, parziale);
+		return this.percorsoMigliore;
+	}
+
+
+	private void cerca(int c, List<Director> parziale) {
+
+		// caso terminale 
+		if (sommaPesi > c) {
+			return ;
+		}
+		if (parziale.size()>this.percorsoMigliore.size()) {
+			this.percorsoMigliore = new ArrayList<>(parziale);
+			// 	return ;
+		}
+			if(this.percorsoMigliore == null) {
+				this.percorsoMigliore = new ArrayList<>(parziale);
+				return ;
+			}
+		
+		
+		// altrimenti ..
+		Director ultimo = parziale.get(parziale.size()-1);
+		
+		
+		for (Director vicino : Graphs.neighborListOf(grafo, ultimo)) {
+			DefaultWeightedEdge e = this.grafo.getEdge(vicino, ultimo);
+			double peso = this.grafo.getEdgeWeight(e);
+			sommaPesi += peso;
+			
+		
+				if(!parziale.contains(vicino)) {
+					parziale.add(vicino);
+					cerca(c, parziale);
+					parziale.remove(parziale.size()-1);
+					sommaPesi -= peso;
+			
+			}
+		}
+		
+	}
 	public Set<Director> getVerticiTendina(){
 		return this.grafo.vertexSet();
 	}
