@@ -106,7 +106,31 @@ public class FXMLController {
 
     @FXML
     void doRicorsione(ActionEvent event) {
-
+    	
+    	txtResult.clear();
+    	
+    	String cScelta = this.txtAttoriCondivisi.getText();
+    	int c ;
+    	try {
+    		c = Integer.parseInt(cScelta);
+    	
+    	}catch (NumberFormatException ne) {
+    		txtResult.appendText("Inserire un numero per gli attori condivisi\n");
+    		return ;
+    	}
+    	
+    	Director d = this.boxRegista.getValue();
+    	if(d==null) {
+    		txtResult.appendText("Selezionare un regista di partenza \n");
+    		return ;
+    	}
+    	
+    	txtResult.appendText("I REGISTI AFFINI A "+d+" SONO:\n");
+    	for (Director dd: this.model.trovaPercorso(d, c)) {
+    		if(!dd.equals(d)) {
+    			txtResult.appendText(dd+"\n");
+    		}
+    	}
     }
 
     @FXML // This method is called by the FXMLLoader when initialization is complete
